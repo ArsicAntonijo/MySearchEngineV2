@@ -1,0 +1,38 @@
+<html>
+  <head>  
+    <title>My search engine</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type='text/javascript' src='JavaScriptSpellCheck/include.js' ></script>	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="style/web_style.css">	
+	<script type='text/javascript' src='searching_web.js' defer></script>
+	<script type='text/javascript' src='web_script.js'></script>
+  </head>
+  <body>	
+	<div id="main">
+		<div id="header">
+			<img src="pictures/logo.png" height="45" width="110" style="float:left;padding-top: 20px"/>
+			<form method="post" name="myForm" autocomplete="off"  style="padding-top: 23px" >
+				<div class="autocomplete" style="width:300px;">
+					<input  id="myInput" type="text" name="q" placeholder="Searching..."> 
+				</div>
+				<button id="btn" type="submit" style="height:38px;width:40px" ><i class="fa fa-search" aria-hidden="true"></i> </button> <br><br>
+			</form>			
+		  
+			<div id="content_resultats"></div><br>
+			<hr>
+		</div>			
+		
+		<div id="content"></div>
+		<div id="logo"></div>		
+		<div id="links"></div>
+	</div>
+		
+    <script>
+		/*initiate the autocomplete function on the "myInput" element*/
+		autocomplete(document.getElementById("myInput"));	
+    </script>  	
+	
+  </body>
+</html>

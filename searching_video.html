@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>My search engine</title>
+	<script type='text/javascript' src='JavaScriptSpellCheck/include.js' ></script>
+	<script type='text/javascript' src='web_script.js' ></script>
+	<script type='text/javascript' src='searching_video.js' defer></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="style/video_style.css">
+
+</head>
+<body>
+	<div class="container">
+
+		<header>
+			<img src="pictures/youtube_img.png" height="45" width="110" style="float:left;padding-left:40px; margin-left: 20px; margin-top:5px"/>
+			<form name="myForm" autocomplete="off"  style="padding-top: 5px" >
+				<div class="autocomplete" style="width:260px;margin-left: 10px; margin-top: 5px">
+					<input  id="myInput" type="text" name="q"  placeholder="Searching..."> 
+				</div>
+				<button id="btn" type="submit" style="height:38px;width:40px" ><i class="fa fa-search" aria-hidden="true"></i> </button> <br><br>
+			</form>			
+			<div id="nav"></div>
+			<br>
+			<hr>			
+		</header>
+		<section id="video"></section>
+		<div id="main"></div>	
+	</div>
+	
+<script> 
+
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("myInput"));
+
+</script>
+
+</body>
+</html>
