@@ -29,7 +29,7 @@
 <div id="main">
 
 	<div id="logo">
-			<img id="pictures/logo" src="logo.png" height="45" width="140" />
+			<img id="pictures/logo.png" src="logo.png" height="45" width="140" />
 
 			<form  method="post" name="myForm" autocomplete="off" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 				<div class="autocomplete" style="width:300px;">
