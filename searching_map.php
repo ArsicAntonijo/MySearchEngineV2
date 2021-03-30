@@ -4,7 +4,7 @@
 
 	<title>My search engine</title>
 	<script type='text/javascript' src='JavaScriptSpellCheck/include.js' ></script>
-	<script type='text/javascript' src='web_script.js' ></script>
+	<script type='text/javascript' src='script/web_script.js' ></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="style/map_style.css">
@@ -29,7 +29,7 @@
 <div id="main">
 
 	<div id="logo">
-			<img id="pictures/logo.png" src="logo.png" height="45" width="140" />
+			<img id="logo" src="pictures/logo.png" height="45" width="140" />
 
 			<form  method="post" name="myForm" autocomplete="off" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 				<div class="autocomplete" style="width:300px;">

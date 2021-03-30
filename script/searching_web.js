@@ -1,4 +1,3 @@
-// mozda da se promeni da kad se ubeci sve da ide u toLower() ...
 const form = document.querySelector('form'); 
 const btn = document.querySelector('#btn');
 const input = document.querySelector('#myInput');
@@ -12,7 +11,6 @@ var key = 'AIzaSyDO7v2aDGSusJmEHm_J8q7-bMC-bK7ma8o';
 var cx = 'ba62ee16088215470';
 var q = '';
 var start = '1';
-var searchType = 'image';
 var URL = 'https://www.googleapis.com/customsearch/v1';
 
 var arr = window.location.href.split("?");
@@ -40,18 +38,19 @@ if(arr.length > 1){
 }
 
 window.onload = function() {       
-    document.getElementById("content_resultats").innerHTML = "<span style=\"float:right;\" > Search for:   " +
-    " <a id=\"transfer\" href=\"searching_web.html?q="+q+"&start=1\" >   WEB  </a>" +
-    "<a id=\"transfer\" > IMAGES </a>"+
-    "<a id=\"transfer\" href=\"searching_map.php?name="+q+"\" >   MAP </a> " + 
-    "<a id=\"transfer\" href=\"searching_video.html?q="+q+"\" >   VIDEO </a> </span>";
-
+    document.getElementById("content_resultats").innerHTML = "<span style=\"float:right;\" > Search for:  " +
+		"<a id=\"transfer\" > WEB </a>"+
+		"<a id=\"transfer\" href=\"searching_images.html?q="+q+"&start=1\" >   IMAGES </a>" +
+		"<a id=\"transfer\" href=\"searching_map.php?name="+q+"\" >   MAP </a> " +
+		"<a id=\"transfer\" href=\"searching_video.html?q="+q+"\" >   VIDEO </a> </span>";
+    
     input.value = q;
-    form.onsubmit = searchForData;
+    form.onsubmit = searchForData;    
+    //loadsth();
     
     if(q != ""){
-        checkLocalDB();
         //loadData();
+        checkLocalDB();
     }
 };
 
@@ -78,31 +77,44 @@ function initiateLocalDB() {
 
         // Create an objectStore to store our notes in (basically like a single table)
         // including a auto-incrementing key
-  //      let objectStore = db.createObjectStore('notes_images', { keyPath: 'id', autoIncrement:true });
+    //    let objectStore = db.createObjectStore('notes_os', { keyPath: 'id', autoIncrement:true });
 
         console.log('Database setup complete');
 	};
 }
 
-function searchForData(e) {
-    // stops convetional submit
-    e.preventDefault();
-
-    value = input.value;
-    if (value.localeCompare("") != 0){        
-        location.replace("searching_images.html?q=" + value);
-    }
+function loadsth(response){ 
+   // open a read/write db transaction, ready for adding the data
+   let transaction = db.transaction(['notes_os'], 'readwrite');
+ 
+   // call an object store that's already been added to the database
+   let objectStore = transaction.objectStore('notes_os');
+   
+   // Make a request to add our newItem object to the object store
+   let request = objectStore.add(response);
+   request.onsuccess = function() {
+     // Clear the form, ready for adding the next entry
+   };
+ 
+   // Report on the success of the transaction completing, when everything is done
+   transaction.oncomplete = function() {
+     console.log('Transaction completed: database modification finished.');
+   };
+ 
+   transaction.onerror = function() {
+     console.log('Transaction not opened due to error');
+   };
 }
 
 function checkLocalDB() {
 	//Get the ObjectStore
-	let objectStore = db.transaction('notes_images').objectStore('notes_images');
+	let objectStore = db.transaction('notes_os').objectStore('notes_os');
 	objectStore.openCursor().onsuccess = function(e) {
 		// Get a reference to the cursor
 		let cursor = e.target.result;
 		if (cursor) {
 			var json = cursor.value;
-			if(json.name == q && json.start == start) {
+			if(json.name == q.toLowerCase() && json.start == start) {
 			    // alert(json.name + " found!");
                 isLocal = true;
                 hndlr(json);
@@ -124,8 +136,7 @@ function loadData() {
         key: key,
         cx: cx,
         q: q,
-        start: start,
-        searchType: searchType
+        start: start
     }
 
     $.getJSON(URL, options, function (data) {
@@ -139,7 +150,7 @@ function hndlr(response) {
     //creating json for localDB
     var obj = {};
     var items = [];
-    obj.name = q;
+    obj.name = q.toLowerCase();
     obj.start = start; 
     
     //prikza teksta i slike 
@@ -147,13 +158,25 @@ function hndlr(response) {
     for (var i = 0; i < response.items.length; i++) {
         var it = {};
         var item = response.items[i];
+        if (item.pagemap != null && item.pagemap.cse_thumbnail != null) {
+            document.getElementById("content").innerHTML += "<br><img id=\"photos\" src="
+            +item.pagemap.cse_thumbnail[0].src+" height=\"100\" width=\"150\" style=\"float:left\"/>";
 
-        document.getElementById("content").innerHTML += 
-			"<a id=\"photos\" href="+item.image.contextLink+" target=\"_blank\" >"+
-			"<img  src="+item.link+" width=\"41%\" height=\"200px\" /> </a>";	
-	
+            it.pagemap = {cse_thumbnail: [
+                {
+                src: item.pagemap.cse_thumbnail[0].src}
+            ]};	
+        } else {
+            document.getElementById("content").innerHTML += 
+            "<br><img id=\"photos\" src=\"pictures/default.png\" height=\"100\" width=\"150\" style=\"float:left\"/>";
+        }
+        document.getElementById("content").innerHTML +=			
+        "<br><a href=" + item.link + " title=" + item.link + " target=\"_new\">" + item.htmlTitle + 
+        "</a><br> <span>"+item.snippet+"</span><br><br><br><br>";
+        
         // items for json        
-        it.image = {contextLink : item.image.contextLink};
+        it.htmlTitle = item.htmlTitle;
+        it.snippet = item.snippet;
         it.link = item.link;
         
         items.push(it);
@@ -168,7 +191,7 @@ function hndlr(response) {
     
     if (currentPage != 1) {
         var s = parseInt(start) - 10;
-        document.getElementById("links").innerHTML = "<a href=\"searching_images.html?q="+q+"&start=" + s + "\"> PREVIUS PAGE  </a>  ";
+        document.getElementById("links").innerHTML = "<a href=\"searching_web.html?q="+q+"&start=" + s + "\"> PREVIUS PAGE  </a>  ";
     } else {
         document.getElementById("links").innerHTML = "";
     }
@@ -180,14 +203,14 @@ function hndlr(response) {
         console.log(jump);
         
         if(x != currentPage){
-            document.getElementById("links").innerHTML += "	<a href=\"searching_images.html?q=" + q + "&start="+jump+"\" > "+x+"</a>";
+            document.getElementById("links").innerHTML += "	<a href=\"searching_web.html?q=" + q + "&start="+jump+"\" > "+x+"</a>";
         } else {
             document.getElementById("links").innerHTML += "	  <a>"+currentPage+"</a>	";
         }
     }		
     if(currentPage < 10) {
         var s = parseInt(start) + 10;
-        document.getElementById("links").innerHTML += "<a href=\"searching_images.html?q="+q+"&start="+s+"\">  NEXT PAGE </a>";
+        document.getElementById("links").innerHTML += "<a href=\"searching_web.html?q="+q+"&start="+s+"\">  NEXT PAGE </a>";
     }
 
     // getting items and storing them
@@ -197,25 +220,12 @@ function hndlr(response) {
     }
 }
 
-function loadsth(response){ 
-    // open a read/write db transaction, ready for adding the data
-    let transaction = db.transaction(['notes_images'], 'readwrite');
-  
-    // call an object store that's already been added to the database
-    let objectStore = transaction.objectStore('notes_images');
-    
-    // Make a request to add our newItem object to the object store
-    let request = objectStore.add(response);
-    request.onsuccess = function() {
-      // Clear the form, ready for adding the next entry
-    };
-  
-    // Report on the success of the transaction completing, when everything is done
-    transaction.oncomplete = function() {
-      console.log('Transaction completed: database modification finished.');
-    };
-  
-    transaction.onerror = function() {
-      console.log('Transaction not opened due to error');
-    };
- }
+function searchForData(e) {
+    // stops convetional submit
+    e.preventDefault();
+
+    value = input.value;
+    if (value.localeCompare("") != 0){        
+        location.replace("searching_web.html?q=" + value);
+    }
+}
